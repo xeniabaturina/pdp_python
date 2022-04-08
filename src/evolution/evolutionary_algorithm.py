@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.graph_utils.Graph import Graph, Mode
+from ..graph_utils.Graph import Graph, Mode
 
 
 class Individual(ABC):

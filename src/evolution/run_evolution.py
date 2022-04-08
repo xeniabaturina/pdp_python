@@ -9,21 +9,21 @@ from scipy.stats import linregress
 from tqdm import tqdm
 from typing import AnyStr, Callable
 
-from src.graph_utils.Graph import Graph
+from ..graph_utils.Graph import Graph
 
-from src.multi_armed_bandit.Arms.CoupleExchange import CoupleExchange
-from src.multi_armed_bandit.Arms.DoubleBridge import DoubleBridge
-from src.multi_armed_bandit.Policies.EpsilonGreedy import EpsilonGreedy
-from src.multi_armed_bandit.Arms.Lin2Opt import Lin2Opt
-from src.multi_armed_bandit.MAB import MAB
-from src.multi_armed_bandit.Arms.PointExchange import PointExchange
-from src.multi_armed_bandit.Arms.RelocateBlock import RelocateBlock
-from src.multi_armed_bandit.Result import Result
+from ..multi_armed_bandit.Arms.CoupleExchange import CoupleExchange
+from ..multi_armed_bandit.Arms.DoubleBridge import DoubleBridge
+from ..multi_armed_bandit.Policies.EpsilonGreedy import EpsilonGreedy
+from ..multi_armed_bandit.Arms.Lin2Opt import Lin2Opt
+from ..multi_armed_bandit.MAB import MAB
+from ..multi_armed_bandit.Arms.PointExchange import PointExchange
+from ..multi_armed_bandit.Arms.RelocateBlock import RelocateBlock
+from ..multi_armed_bandit.Result import Result
 
-from src.evolution.evolutionary_algorithm import Evolution, fitness, TSP
-from src.evolution.mutations import mab, to_string
+from ..evolution.evolutionary_algorithm import Evolution, fitness, TSP
+from ..evolution.mutations import mab, to_string
 
-from src.visualization.draw_graph import draw_graph
+from ..visualization.draw_graph import draw_graph
 
 warnings.filterwarnings(action="ignore", module="scipy", message="^invalid value")
 
@@ -122,7 +122,7 @@ def run_evolution(
             draw_graph(ax, evolution.get_best_g())
 
             # create file name and append it to a list
-            filename = f'../../src/visualization/tmp/1{epoch}.png'
+            filename = f'src/visualization/tmp/{epoch}.png'
             filenames.append(filename)
 
             # save frame
@@ -149,7 +149,7 @@ def run_evolution(
 
     if gif_filename:
         # build gif
-        with imageio.get_writer('../../figures/gifs/' + gif_filename + '.gif', mode='I', fps=6) as writer:
+        with imageio.get_writer('figures/gifs/' + gif_filename + '.gif', mode='I', fps=6) as writer:
             for filename in filenames:
                 image = imageio.imread(filename)
                 writer.append_data(image)

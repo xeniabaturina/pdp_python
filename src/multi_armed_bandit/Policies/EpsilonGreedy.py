@@ -9,9 +9,9 @@ import numpy as np
 import numpy.random as rn
 
 try:
-    from src.multi_armed_bandit.Policies.BasePolicy import BasePolicy
+    from BasePolicy import BasePolicy
 except ImportError:
-    from src.multi_armed_bandit.Policies.BasePolicy import BasePolicy
+    from .BasePolicy import BasePolicy
 
 
 #: Default value for epsilon for :class:`EpsilonGreedy`

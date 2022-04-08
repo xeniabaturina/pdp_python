@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 from typing import List, Text
 
-from src.graph_utils.Graph import Graph
+from ..graph_utils.Graph import Graph
 
 
 def vec_norm(v):
@@ -59,8 +59,8 @@ def draw_path(edges, ax, g=None, gradient=False):
 
 def draw_orders(ax, orders: List = None, dataset_dir: Text = None):
     if dataset_dir:
-        orders_df = pd.read_csv('../../data/' + dataset_dir + '/orders.csv')
-        coordinates_df = pd.read_csv('../../data/' + dataset_dir + '/coordinates_by_id.csv')
+        orders_df = pd.read_csv(dataset_dir + '/orders.csv')
+        coordinates_df = pd.read_csv(dataset_dir + '/coordinates_by_id.csv')
         orders_ids = orders_df[['from', 'to']].values.tolist()
 
         def get_coords(order):

@@ -34,7 +34,7 @@ class Graph:
             if dataset_dir is None:
                 raise ValueError('need dataset to process graph on it')
 
-            if not(path.exists('../../data/' + dataset_dir + '/orders.csv')):
+            if not(path.exists(dataset_dir + '/orders.csv')):
                 raise FileExistsError('directory ' + dataset_dir + ' does not exist')
             self.edges = self.construct_by_dataset(dataset_dir)
 
@@ -63,7 +63,7 @@ class Graph:
     @staticmethod
     def construct_by_dataset(dataset_dir):
         edges = []
-        orders_df = pd.read_csv('../../data/' + dataset_dir + '/orders.csv')
+        orders_df = pd.read_csv(dataset_dir + '/orders.csv')
         p = [*orders_df['from'].values.tolist(), *orders_df['to'].values.tolist()]
 
         for i, _ in tqdm(enumerate(p[:-1])):
@@ -80,8 +80,8 @@ class Graph:
             if dataset_dir is None:
                 raise ValueError('graph has no dataset')
 
-            self.coordinates_from_csv = pd.read_csv('../../data/' + dataset_dir + '/coordinates_by_id.csv', sep=',')
-            # coords_df = pd.read_csv('../../data/' + dataset_dir + '/coordinates_by_id.csv', sep=',')
+            self.coordinates_from_csv = pd.read_csv(dataset_dir + '/coordinates_by_id.csv', sep=',')
+
         return np.array(self.coordinates_from_csv.iloc[idx].to_list())
 
     def get_edge_weight(self, edge, distances=None):
@@ -150,7 +150,7 @@ class Graph:
         dataset_dir = self.dataset_dir
 
         if dataset_dir:
-            orders_df = pd.read_csv('../../data/' + dataset_dir + '/orders.csv', sep=',')
+            orders_df = pd.read_csv(dataset_dir + '/orders.csv', sep=',')
             orders = orders_df[['from', 'to']].values.tolist()
             current_path_list = [*list(edge[0] for edge in self.edges), self.edges[-1][1]]
             current_path = ','.join(str(x) for x in current_path_list)

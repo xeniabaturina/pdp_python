@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from src.graph_utils.Graph import Graph, Mode
+from ..graph_utils.Graph import Graph, Mode
 
 
 def lin2opt(g: Graph, distances):
@@ -153,7 +153,7 @@ def couple_exchange(g: Graph, distances):
     g_new_weight = g_old_weight
 
     if dataset_dir:
-        orders_df = pd.read_csv('../../data/' + dataset_dir + '/orders.csv')
+        orders_df = pd.read_csv(dataset_dir + '/orders.csv')
         current_path = [*list(edge[0] for edge in edges), edges[-1][1]]
         orders = orders_df[['from', 'to']].values.tolist()
 
