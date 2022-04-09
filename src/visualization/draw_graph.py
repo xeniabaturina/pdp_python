@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 import matplotlib
 import numpy as np
 import pandas as pd
@@ -28,11 +30,15 @@ def draw_arrow(ax, p1, p2, **kwargs):
     )
 
 
-def draw_path(edges, ax, g=None, gradient=False):
+def draw_path(edges, ax, g=None, gradient=False, normalize=True):
     params = {'facecolors': 'None', 'edgecolors': 'r'}
 
     start_point = g.get_coords_by_id(g.edges[0][0]) if g and g.dataset_dir else edges[0][0]
     end_point = g.get_coords_by_id(g.edges[-1][1]) if g and g.dataset_dir else edges[-1][1]
+
+    if normalize:
+        ax.set_xlim(-0.1, 1.1)
+        ax.set_ylim(-0.1, 1.1)
 
     ax.scatter(*start_point, s=100, **params)
     ax.scatter(*end_point, s=100, **params)
@@ -52,16 +58,55 @@ def draw_path(edges, ax, g=None, gradient=False):
         i = center - (vec / 2) * 0.9
         f = center + (vec / 2) * 0.8
 
-        color = cmap(cnt / len(edges) + 0.2)if gradient else 'g'
+        color = cmap(cnt / len(edges) + 0.2) if gradient else 'g'
         draw_arrow(ax, i, f, color=color)
         cnt += 1
 
 
-def draw_orders(ax, orders: List = None, dataset_dir: Text = None):
+def get_active_indexes(edges):
+    indexes = []
+    for edge in edges:
+        indexes += edge
+    indexes = list(dict.fromkeys(indexes))
+    indexes.sort()
+    return indexes
+
+
+def normalize_coords(edges, coordinates_df):
+    indexes = get_active_indexes(edges)
+
+    x_min = np.array(itemgetter(*indexes)(coordinates_df.coord_x)).min()
+    y_min = np.array(itemgetter(*indexes)(coordinates_df.coord_y)).min()
+    x_min = abs(x_min) if x_min < 0 else -x_min
+    y_min = abs(y_min) if y_min < 0 else -y_min
+
+    x_new = coordinates_df.coord_x + x_min
+    y_new = coordinates_df.coord_y + y_min
+
+    x_new_max = np.array(itemgetter(*indexes)(x_new)).max()
+    y_new_max = np.array(itemgetter(*indexes)(y_new)).max()
+
+    factor = max(x_new_max, y_new_max)
+    x_new = x_new / factor
+    y_new = y_new / factor
+
+    x_new_max = np.array(itemgetter(*indexes)(x_new)).max()
+    y_new_max = np.array(itemgetter(*indexes)(y_new)).max()
+
+    x_new = x_new + (1 - x_new_max) / 2
+    y_new = y_new + (1 - y_new_max) / 2
+
+    return pd.DataFrame({'coord_x': x_new, 'coord_y': y_new})
+
+
+def draw_orders(ax, orders: List = None, dataset_dir: Text = None, normalize=True):
     if dataset_dir:
         orders_df = pd.read_csv(dataset_dir + '/orders.csv')
         coordinates_df = pd.read_csv(dataset_dir + '/coordinates_by_id.csv')
         orders_ids = orders_df[['from', 'to']].values.tolist()
+
+        if normalize:
+            coordinates_df = normalize_coords(orders_ids, coordinates_df)
 
         def get_coords(order):
             id_from, id_to = order
@@ -72,9 +117,13 @@ def draw_orders(ax, orders: List = None, dataset_dir: Text = None):
             return (x_coord_from, y_coord_from), (x_coord_to, y_coord_to)
 
         orders = list(map(lambda order: get_coords(order), orders_ids))
+        draw_path(orders, ax)
+    else:
+        draw_path(orders, ax)
 
-    draw_path(orders, ax)
 
+def draw_graph(ax, g: Graph, normalize=True):
+    if normalize:
+        g.coordinates_from_csv = normalize_coords(g.edges, g.coordinates_from_csv)
 
-def draw_graph(ax, g: Graph):
     draw_path(g.edges, ax, g, gradient=True)

@@ -20,6 +20,7 @@ class TSP(Individual):
 
         new_g = Graph(Mode.EDGES, g_mutated.edges, self.g.dataset_dir)
         new_g.set_path_weight(g_mutated.get_path_weight(distances))
+        new_g.coordinates_from_csv = self.g.coordinates_from_csv
 
         old_weight = self.g.get_path_weight(distances)
         new_weight = new_g.get_path_weight(distances)

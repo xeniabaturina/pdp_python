@@ -14,22 +14,25 @@ if __name__ == "__main__":
 
     fig, (ax0, ax1, ax2) = plt.subplots(nrows=3, ncols=1, figsize=(5, 15))
 
-    ax0.plot(evolution.get_fitness_hist())
-    ax0.set_title('fitness hist')
-    ax0.set_xlabel('epoch')
-    ax0.set_ylabel('fitness')
+    fontsize = 10
+    for i, ax in enumerate((ax0, ax1, ax2)):
+        if i == 0:
+            ax.plot(evolution.get_fitness_hist())
+            ax.set_title('fitness hist', fontsize=fontsize)
+            ax.set_xlabel('epoch', fontsize=fontsize)
+            ax.set_ylabel('fitness', fontsize=fontsize)
 
-    ax1.set_facecolor('#fcfcfc')
-    draw_graph(ax1, g)
-    ax1.set_title('start path')
-    ax1.set_xlabel('x coord')
-    ax1.set_ylabel('y coord')
+        else:
+            ax.set_facecolor('#fcfcfc')
+            if i == 1:
+                draw_graph(ax, g)
+                ax.set_title('start path', fontsize=fontsize)
+            else:
+                best_path = evolution.get_best_path()
+                draw_graph(ax2, best_path)
+                ax.set_title('result path', fontsize=fontsize)
 
-    ax2.set_facecolor('#fcfcfc')
-    best_path = evolution.get_best_path()
-    draw_graph(ax2, best_path)
-    ax2.set_title('result path')
-    ax2.set_xlabel('x coord')
-    ax2.set_ylabel('y coord')
+            ax.set_xlabel('x coord', fontsize=fontsize)
+            ax.set_ylabel('y coord', fontsize=fontsize)
 
     plt.show()

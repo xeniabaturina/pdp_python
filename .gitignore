@@ -133,5 +133,7 @@ dmypy.json
 
 # my files
 data/old
+data/taxi
+data/taxi_partly
 research/old
 venv_pdp

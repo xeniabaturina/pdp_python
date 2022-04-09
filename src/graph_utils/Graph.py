@@ -164,4 +164,6 @@ class Graph:
 
     def optimize(self):
         edges = list(filter(lambda v: v[0] != v[1], self.edges))
-        return Graph(Mode.EDGES, edges, self.dataset_dir)
+        optimized_g = Graph(Mode.EDGES, edges, self.dataset_dir)
+        optimized_g.coordinates_from_csv = self.coordinates_from_csv
+        return optimized_g
