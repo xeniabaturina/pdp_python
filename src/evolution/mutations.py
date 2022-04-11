@@ -39,7 +39,7 @@ def lin2opt(g: Graph, distances):
     )
 
     g_new = Graph(Mode.EDGES, edges, g.dataset_dir)
-    g_new.set_path_weight(g_new_weight, distances)
+    g_new.set_path_weight(g_new_weight)
     g_new.coordinates_from_csv = g.coordinates_from_csv
 
     return g_new
@@ -92,7 +92,7 @@ def double_bridge(g: Graph, distances):
                    *j_to_k, edges[k],
                    *h_to_end],
                   g.dataset_dir)
-    g_new.set_path_weight(g_new_weight, distances)
+    g_new.set_path_weight(g_new_weight)
     g_new.coordinates_from_csv = g.coordinates_from_csv
 
     return g_new
@@ -143,7 +143,7 @@ def point_exchange(g: Graph, distances):
     )
 
     g_new = Graph(Mode.EDGES, edges, g.dataset_dir)
-    g_new.set_path_weight(g_new_weight, distances)
+    g_new.set_path_weight(g_new_weight)
     g_new.coordinates_from_csv = g.coordinates_from_csv
 
     return g_new
@@ -206,7 +206,7 @@ def couple_exchange(g: Graph, distances):
                          *second_to_end]
 
     g_new = Graph(Mode.EDGES, edges, g.dataset_dir)
-    g_new.set_path_weight(g_new_weight, distances)
+    g_new.set_path_weight(g_new_weight)
     g_new.coordinates_from_csv = g.coordinates_from_csv
 
     return g_new
@@ -266,7 +266,7 @@ def relocate_block(g: Graph, distances, dummy=True):
             break
 
     g_new = Graph(Mode.EDGES, best, g.dataset_dir)
-    g_new.set_path_weight(g_best_weight, distances)
+    g_new.set_path_weight(g_best_weight)
     g_new.coordinates_from_csv = g.coordinates_from_csv
 
     return g_new

@@ -110,14 +110,11 @@ class Graph:
         else:
             return np.sqrt((v1[0] - v2[0]) ** 2 + (v1[1] - v2[1]) ** 2)
 
-    def compute_path_weight(self, distances=None, path_str=None):
+    def compute_path_weight(self, distances=None):
         weight = sum([
             self.get_edge_weight(edge, distances)
             for edge in self.edges
         ])
-
-        if distances and path_str:
-            distances.paths[path_str] = weight
 
         self.weight = weight
         return weight
@@ -126,24 +123,9 @@ class Graph:
         if self.weight is not None:
             return self.weight
         else:
-            if distances is not None:
-                path_str = ''.join(str(x) for x in self.edges)
+            return self.compute_path_weight(distances)
 
-                if path_str in distances.paths:
-                    weight = distances.paths[path_str]
-                    self.weight = weight
-                    return weight
-
-                else:
-                    return self.compute_path_weight(distances, path_str)
-            else:
-                return self.compute_path_weight()
-
-    def set_path_weight(self, g_new_weight, distances=None):
-        if distances:
-            path_str = ''.join(str(x) for x in self.edges)
-            distances.paths[path_str] = g_new_weight
-
+    def set_path_weight(self, g_new_weight):
         self.weight = g_new_weight
 
     def is_valid(self):

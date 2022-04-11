@@ -54,7 +54,7 @@ class EvolutionVisualisation:
 class Distances:
     def __init__(self):
         self.distances = {}
-        self.paths = {}
+        # self.paths = {}
 
 
 class Bandit:
@@ -69,7 +69,7 @@ class Bandit:
 
 
 def run_evolution(
-        n_epochs: int, pool_size: int, mutation: Callable,
+        n_epochs: int, pool_size: int, seed: int, mutation: Callable,
         initial_graph: Graph,
         gif_filename: AnyStr = None):
 
@@ -88,7 +88,7 @@ def run_evolution(
             RelocateBlock(),
         ]
 
-        policy = EpsilonGreedy(nb_arms=5, epsilon=0.3)
+        policy = EpsilonGreedy(nb_arms=5, epsilon=0.3, seed=seed)
         env = MAB(arm_configuration)
         horizon = n_epochs * pool_size * 5
         results = Result(env.nbArms, horizon)

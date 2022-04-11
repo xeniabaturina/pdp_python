@@ -33,6 +33,10 @@ def draw_arrow(ax, p1, p2, **kwargs):
 def draw_path(edges, ax, g=None, gradient=False, normalize=True):
     params = {'facecolors': 'None', 'edgecolors': 'r'}
 
+    count_of_edges = len(edges)
+    if count_of_edges > 100:
+        params['alpha'] = 0.3
+
     start_point = g.get_coords_by_id(g.edges[0][0]) if g and g.dataset_dir else edges[0][0]
     end_point = g.get_coords_by_id(g.edges[-1][1]) if g and g.dataset_dir else edges[-1][1]
 
@@ -59,7 +63,10 @@ def draw_path(edges, ax, g=None, gradient=False, normalize=True):
         f = center + (vec / 2) * 0.8
 
         color = cmap(cnt / len(edges) + 0.2) if gradient else 'g'
-        draw_arrow(ax, i, f, color=color)
+        if count_of_edges > 100:
+            draw_arrow(ax, i, f, color=color, alpha=0.5)
+        else:
+            draw_arrow(ax, i, f, color=color)
         cnt += 1
 
 
