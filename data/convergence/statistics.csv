@@ -1,2 +1,2 @@
-size,n_ep,pool,seed,from_index,length,lo_progress,lo_time,lo_epochs,db_progress,db_time,db_epochs,pe_progress,pe_time,pe_epochs,rb_progress,rb_time,rb_epochs,cmb_progress,cmb_time,cmb_epochs,mab_progress,mab_time,mab_epochs,mab_lo_pulls,mab_db_pulls,mab_pe_pulls,mab_ce_pulls,mab_rb_pulls
-100,100,100,42,0,8232.812599923396,80.42,0:00:03,89,56.62,0:00:03,79,71.3,0:00:02,99,76.83,0:00:03,100,78.23,0:00:14,100,74.78,0:00:03,68,780,0,0,0,0
+size,n_ep,pool,from_index,length,lo_progress,lo_time,lo_epochs,db_progress,db_time,db_epochs,pe_progress,pe_time,pe_epochs,rb_progress,rb_time,rb_epochs,cmb_progress,cmb_time,cmb_epochs,mab_progress,mab_time,mab_epochs,mab_lo_pulls,mab_db_pulls,mab_pe_pulls,mab_ce_pulls,mab_rb_pulls
+300,100,100,0,25864.429773761585,77.38,0:00:07,100,54.1,0:00:09,100,70.37,0:00:06,100,70.17,0:00:08,100,71.94,0:00:19,100,69.76,0:00:11,100,146,48,198,1,884

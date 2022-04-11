@@ -14,6 +14,8 @@ from ..graph_utils.Graph import Graph
 from ..multi_armed_bandit.Arms.CoupleExchange import CoupleExchange
 from ..multi_armed_bandit.Arms.DoubleBridge import DoubleBridge
 from ..multi_armed_bandit.Policies.EpsilonGreedy import EpsilonGreedy
+from ..multi_armed_bandit.Policies.Softmax import Softmax
+from ..multi_armed_bandit.Policies.UCB1 import UCB1
 from ..multi_armed_bandit.Arms.Lin2Opt import Lin2Opt
 from ..multi_armed_bandit.MAB import MAB
 from ..multi_armed_bandit.Arms.PointExchange import PointExchange
@@ -68,8 +70,9 @@ class Bandit:
 
 
 def run_evolution(
-        n_epochs: int, pool_size: int, seed: int, mutation: Callable,
+        n_epochs: int, pool_size: int, mutation: Callable,
         initial_graph: Graph,
+        policy=None,
         gif_filename: AnyStr = None):
 
     if gif_filename:
@@ -86,8 +89,9 @@ def run_evolution(
             CoupleExchange(),
             RelocateBlock(),
         ]
+        if not policy:
+            policy = EpsilonGreedy(nb_arms=5, epsilon=0.3)
 
-        policy = EpsilonGreedy(nb_arms=5, epsilon=0.3, seed=seed)
         env = MAB(arm_configuration)
         horizon = n_epochs * pool_size * 5
         results = Result(env.nbArms, horizon)

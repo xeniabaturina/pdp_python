@@ -25,14 +25,15 @@ class TSP(Individual):
         old_weight = self.g.get_path_weight(distances)
         new_weight = new_g.get_path_weight(distances)
 
+        if bandit:
+            r = round((1 - new_weight / old_weight) * 100, 2)
+            reward = bandit.env.draw(choice, r, bandit.time)
+            bandit.policy.get_reward(choice, reward)
+            bandit.results.store(bandit.time, choice, reward)
+
         if new_weight < old_weight:
             if new_g.is_valid():
                 self.g = new_g
-                if bandit:
-                    r = round((1 - new_weight / old_weight) * 100, 2)
-                    reward = bandit.env.draw(choice, r, bandit.time)
-                    bandit.policy.get_reward(choice, reward)
-                    bandit.results.store(bandit.time, choice, reward)
 
 
 class Population:
