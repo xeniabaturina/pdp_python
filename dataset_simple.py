@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 
-from pdp_python.src.graph_utils.Graph import Graph, Mode
-from pdp_python.src.evolution.mutations import \
+from src.graph_utils.Graph import Graph, Mode
+from src.evolution.mutations import \
     mab  # or lin2opt, double_bridge, point_exchange, couple_exchange, relocate_block, combined
-from pdp_python.src.evolution.run_evolution import run_evolution
-from pdp_python.src.visualization.draw_graph import draw_graph
+from src.evolution.run_evolution import run_evolution
+from src.visualization.draw_graph import draw_graph
 
 if __name__ == "__main__":
     g = Graph(Mode.IDS, dataset_dir="data/testing")
     g.set_path_weight(g.get_path_weight())
 
-    evolution = run_evolution(n_epochs=20, pool_size=20, mutation=mab, initial_graph=g, gif_filename='test')
+    evolution = run_evolution(n_epochs=20, pool_size=20, seed=42, mutation=mab, initial_graph=g, gif_filename='test')
 
     fig, (ax0, ax1, ax2) = plt.subplots(nrows=3, ncols=1, figsize=(5, 15))
 

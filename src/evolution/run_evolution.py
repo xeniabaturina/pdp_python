@@ -54,7 +54,6 @@ class EvolutionVisualisation:
 class Distances:
     def __init__(self):
         self.distances = {}
-        # self.paths = {}
 
 
 class Bandit:
