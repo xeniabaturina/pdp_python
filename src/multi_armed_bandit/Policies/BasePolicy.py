@@ -23,29 +23,35 @@ class BasePolicy(object):
         # Internal time
         self.t = 0
 
-        # Number of pulls of each arms
+        # Number of pulls of each arm
         self.pulls = np.zeros(nb_arms, dtype=int)
 
-        # Cumulated rewards of each arms
-        self.rewards = np.zeros(nb_arms)
+        # Cumulated rewards of each arm
+        # self.rewards = np.zeros(nb_arms)
+        self.rewards = [0.1 for _ in range(nb_arms)]
+
+        # Cumulated losses of each arm
+        # self.losses = np.zeros(nb_arms)
+        self.losses = [0.1 for _ in range(nb_arms)]
 
     def __str__(self):
         """ -> str """
         return self.__class__.__name__
 
-    def start_game(self):
-        """ Start the game (fill pulls and rewards with 0)."""
-        self.t = 0
-        self.pulls.fill(0)
-        self.rewards.fill(0)
+    # def start_game(self):
+    #     """ Start the game (fill pulls and rewards with 0)."""
+    #     self.t = 0
+    #     self.pulls.fill(0.1)
+    #     self.rewards.fill(0.1)
 
-    def get_reward(self, arm, reward):
+    def get_reward(self, arm, loss, reward):
         """ Give a reward: increase t, pulls, and update cumulated sum of rewards for that arm (normalized in [0,
         1]). """
         self.t += 1
         self.pulls[arm] += 1
         reward = (reward - self.lower) / self.amplitude
-        self.rewards[arm] = max(0, self.rewards[arm] + reward)
+        self.rewards[arm] = max(0.1, self.rewards[arm] + reward)
+        self.losses[arm] = max(0.1, self.losses[arm] + loss)
 
     def choice(self):
         """ Not defined."""

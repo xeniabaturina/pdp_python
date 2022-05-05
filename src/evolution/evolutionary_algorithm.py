@@ -15,7 +15,11 @@ class Individual(ABC):
 
 class TSP(Individual):
     def mutate(self, mutation, distances, bandit):
-        choice = bandit.policy.choice() if bandit else None
+        try:
+            choice = bandit.policy.choice() if bandit else None
+        except Exception as e:
+            choice = 1
+
         g_mutated = mutation(self.g, distances, choice) if bandit else mutation(self.g, distances)
 
         new_g = Graph(Mode.EDGES, g_mutated.edges, self.g.dataset_dir)
@@ -26,9 +30,10 @@ class TSP(Individual):
         new_weight = new_g.get_path_weight(distances)
 
         if bandit:
-            r = round((1 - new_weight / old_weight) * 100, 2)
+            r = (1 - new_weight / old_weight) * 100
             reward = bandit.env.draw(choice, r, bandit.time)
-            bandit.policy.get_reward(choice, reward)
+            l = (new_weight / old_weight) * 100
+            bandit.policy.get_reward(choice, l, reward)
             bandit.results.store(bandit.time, choice, reward)
 
         if new_weight < old_weight:

@@ -37,10 +37,16 @@ class Softmax(BasePolicy):
         """
 
         normalization_factor = np.sum([np.exp(mu_j / self.tau) for mu_j in self.rewards])
+
         probabilities = np.array([
             np.exp(mu_i / self.tau) / normalization_factor
             for mu_i in self.rewards
         ])
+
+        if np.nan in probabilities:
+            print(self.rewards)
+            print(normalization_factor)
+            print(probabilities)
 
         arm = np.random.choice(
             a=[0, 1, 2, 3, 4],
