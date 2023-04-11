@@ -7,23 +7,11 @@ import warnings
 from matplotlib import pyplot as plt
 from scipy.stats import linregress
 from tqdm import tqdm
-from typing import AnyStr, Callable
+from typing import AnyStr
 
 from ..graph_utils.Graph import Graph
 
-from ..multi_armed_bandit.Arms.CoupleExchange import CoupleExchange
-from ..multi_armed_bandit.Arms.DoubleBridge import DoubleBridge
-from ..multi_armed_bandit.Policies.EpsilonGreedy import EpsilonGreedy
-from ..multi_armed_bandit.Policies.Softmax import Softmax
-from ..multi_armed_bandit.Policies.UCB1 import UCB1
-from ..multi_armed_bandit.Arms.Lin2Opt import Lin2Opt
-from ..multi_armed_bandit.MAB import MAB
-from ..multi_armed_bandit.Arms.PointExchange import PointExchange
-from ..multi_armed_bandit.Arms.RelocateBlock import RelocateBlock
-from ..multi_armed_bandit.Result import Result
-
 from ..evolution.evolutionary_algorithm import Evolution, fitness, TSP
-from ..evolution.mutations import mab, to_string
 
 from ..visualization.draw_graph import draw_graph
 
@@ -31,7 +19,9 @@ warnings.filterwarnings(action="ignore", module="scipy", message="^invalid value
 
 
 class EvolutionVisualisation:
-    def __init__(self, evolution: Evolution, fitness_hist, time_hist, progress, time, epochs, pulls):
+    def __init__(self, evolution: Evolution, fitness_hist, time_hist, progress, time, epochs, pulls, pulls_succ,
+                 probabilities):
+        self.probabilities = probabilities
         self.evolution = evolution
         self.fitness_hist = fitness_hist
         self.time_hist = time_hist
@@ -39,6 +29,10 @@ class EvolutionVisualisation:
         self.time = time
         self.epochs = epochs
         self.pulls = pulls
+        self.pulls_succ = pulls_succ
+
+    def get_probabilities(self):
+        return self.probabilities
 
     def get_fitness_hist(self):
         return self.fitness_hist
@@ -58,65 +52,47 @@ class Distances:
         self.distances = {}
 
 
-class Bandit:
-    def __init__(self, policy, env, results):
-        self.policy = policy
-        self.env = env
-        self.results = results
-        self.time = 0
-
-    def time_inc(self):
-        self.time += 1
-
-
 def run_evolution(
-        n_epochs: int, pool_size: int, mutation: Callable,
+        logger,
+        n_epochs: int, pool_size: int,
+        offsprings_num,
         initial_graph: Graph,
-        policy=None,
-        gif_filename: AnyStr = None):
+        strategy,
+        evolution_type,
+        derivative_bound=0,
+        gif_filename: AnyStr = None, log="",
+        tqdm_disable=False):
 
     if gif_filename:
         gif_filename = gif_filename.replace('.gif', '')
 
-    distances = Distances()
-    bandit = None
-
-    if mutation == mab:
-        arm_configuration = [
-            Lin2Opt(),
-            DoubleBridge(),
-            PointExchange(),
-            CoupleExchange(),
-            RelocateBlock(),
-        ]
-        if not policy:
-            policy = EpsilonGreedy(nb_arms=5, epsilon=0.3)
-
-        env = MAB(arm_configuration)
-        horizon = n_epochs * pool_size * 5
-        results = Result(env.nbArms, horizon)
-        bandit = Bandit(policy, env, results)
+    calculated_weights = Distances()
 
     evolution = Evolution(
         pool_size=pool_size,
+        offsprings_num=offsprings_num,
         fitness=fitness,
+        evolution_type=evolution_type,
         individual_class=TSP,
-        mutation=mutation,
         initial_graph=initial_graph,
-        distances=distances,
-        bandit=bandit
+        calculated_weights=calculated_weights,
+        strategy=strategy,
+        logger=logger
     )
 
     fitness_hist = []
+    probabilities = []
     time_hist = []
     filenames = []
 
     last_slope = np.Inf
-    for epoch in (pbar := tqdm(range(n_epochs), leave=False)):
+    for epoch in (pbar := tqdm(range(n_epochs), leave=False, disable=tqdm_disable)):
         best_result = evolution.get_best_weight()
         fitness_hist.append(-best_result)
-        pbar.set_description(f'({to_string(mutation)})' +
-                             f'Processing {epoch} epoch, {round(best_result, 2)}, slope {round(last_slope, 2)}')
+
+        probabilities.append(strategy.probabilities)
+
+        pbar.set_description(f'{log}' + f' | Processing {epoch} epoch, {round(best_result, 2)}, slope {round(last_slope, 2)}')
         evolution.step()
 
         if gif_filename:
@@ -134,14 +110,16 @@ def run_evolution(
 
         time_hist.append(pbar.format_dict["elapsed"])
 
-        t = 5
+        t = 25
         b = fitness_hist[-t:]
         a = [i for i, _ in enumerate(b)]
 
-        eps = 1e-4
+        eps = derivative_bound
         last_slope = linregress(a, b).slope
-        if epoch >= t and last_slope < eps:
-            break
+
+        if derivative_bound > 0:
+            if epoch >= t and last_slope < eps:
+                break
 
     start_path = -round(fitness_hist[0], 2)
     end_path = -round(fitness_hist[-1], 2)
@@ -161,6 +139,7 @@ def run_evolution(
         for filename in set(filenames):
             os.remove(filename)
 
-    pulls = bandit.results.pulls if bandit else np.zeros(5)
+    pulls = strategy.pulls
+    pulls_succ = strategy.pulls_succ
 
-    return EvolutionVisualisation(evolution, fitness_hist, time_hist, progress, time, epochs, pulls)
+    return EvolutionVisualisation(evolution, fitness_hist, time_hist, progress, time, epochs, pulls, pulls_succ, probabilities)

@@ -1,4 +1,5 @@
 from operator import itemgetter
+from os import path
 
 import matplotlib
 import numpy as np
@@ -107,9 +108,17 @@ def normalize_coords(edges, coordinates_df):
 
 
 def draw_orders(ax, orders: List = None, dataset_dir: Text = None, normalize=True):
+    # ToDo: if no orders and no dataset throw error
     if dataset_dir:
         orders_df = pd.read_csv(dataset_dir + '/orders.csv')
-        coordinates_df = pd.read_csv(dataset_dir + '/coordinates_by_id.csv')
+
+        if path.exists(dataset_dir + '/coordinates_by_id.csv'):
+            coordinates_df = pd.read_csv(dataset_dir + '/coordinates_by_id.csv', sep=',')
+        elif path.exists(path.dirname(dataset_dir) + '/coordinates_by_id.csv'):
+            coordinates_df = pd.read_csv(path.dirname(dataset_dir) + '/coordinates_by_id.csv', sep=',')
+        else:
+            raise FileNotFoundError('cannot find coordinates_by_id.csv file')
+
         orders_ids = orders_df[['from', 'to']].values.tolist()
 
         if normalize:
@@ -130,7 +139,7 @@ def draw_orders(ax, orders: List = None, dataset_dir: Text = None, normalize=Tru
 
 
 def draw_graph(ax, g: Graph, normalize=True):
-    if normalize:
+    if normalize and g.dataset_dir is not None:
         g.coordinates_from_csv = normalize_coords(g.edges, g.coordinates_from_csv)
 
     draw_path(g.edges, ax, g, gradient=True)

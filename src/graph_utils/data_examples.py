@@ -1,5 +1,4 @@
 import numpy as np
-np.random.seed(42)
 
 
 def spiral_archimedes(k, r_start=0, r_end=1, spins=3, random=False):
@@ -12,7 +11,7 @@ def spiral_archimedes(k, r_start=0, r_end=1, spins=3, random=False):
     if random:
         x, y = x + np.random.normal(size=k) / 50, y + np.random.normal(size=k) / 50
 
-    return list(zip((x, y)))
+    return list(zip(x, y))
 
 
 def random_points(size: int) -> list:

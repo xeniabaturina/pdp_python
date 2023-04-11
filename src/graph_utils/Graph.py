@@ -35,7 +35,7 @@ class Graph:
                 raise ValueError('need dataset to process graph on it')
 
             if not(path.exists(dataset_dir + '/orders.csv')):
-                raise FileExistsError('directory ' + dataset_dir + ' does not exist')
+                raise FileNotFoundError('file ' + dataset_dir + '/orders.csv' + ' does not exist')
             self.edges = self.construct_by_dataset(dataset_dir)
 
         elif mode == Mode.EDGES:
@@ -80,9 +80,17 @@ class Graph:
             if dataset_dir is None:
                 raise ValueError('graph has no dataset')
 
-            self.coordinates_from_csv = pd.read_csv(dataset_dir + '/coordinates_by_id.csv', sep=',')
-
-        return np.array(self.coordinates_from_csv.iloc[idx].to_list())
+            if path.exists(dataset_dir + '/coordinates_by_id.csv'):
+                self.coordinates_from_csv = pd.read_csv(dataset_dir + '/coordinates_by_id.csv', sep=',')
+            elif path.exists(path.dirname(dataset_dir) + '/coordinates_by_id.csv'):
+                self.coordinates_from_csv = pd.read_csv(path.dirname(dataset_dir) + '/coordinates_by_id.csv', sep=',')
+            else:
+                raise FileNotFoundError('cannot find coordinates_by_id.csv file')
+        try:
+            lst = self.coordinates_from_csv.iloc[idx].to_list()
+            return np.array(lst)
+        except:
+            return np.array(self.coordinates_from_csv.iloc[idx].to_list())
 
     def get_edge_weight(self, edge, distances=None):
         v1, v2 = edge
