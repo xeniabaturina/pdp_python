@@ -1,2 +1,2 @@
-# pdp_python
-Solution of Pickup and Delivery problem based on evolutional algorithm approach
+# PDP with Mutations
+This project is dedicated to the development of algorithms for solving the Pickup and Delivery Problem (PDP) using portfolio management of mutations.
